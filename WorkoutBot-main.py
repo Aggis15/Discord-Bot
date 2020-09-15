@@ -41,9 +41,10 @@ async def on_member_join(member):
 	# Log Embed
 	logembed = discord.Embed (
 		title = "Member joined",
-		description = f"{member} has joined the server.",
+		description = f"{member} has joined the server. \n Account created at: {member.created_at}",
 		color = discord.Colour.blue()
 	)
+	logembed.set_footer(text = f"ID: {member.id} • " + date + " M-D-Y")
 	# DM embed
 	dmembed = discord.Embed (
 		title = "Workout Workplace",
@@ -63,7 +64,7 @@ async def on_member_join(member):
 	# Wait for a reaction and add role
 	await Client.wait_for("reaction_add")
 	await member.add_roles(role)
-	
+	print(f"{member} has reacted to the DM message and has been given access to the server!")
 	
 
 # When someone leaves the server, it gets printed in the staff channel and in the console
@@ -74,13 +75,14 @@ async def on_member_remove(member):
 	# Embed Format
 	embed = discord.Embed(
 		title = "Member left",
-		description = f"{member} has left the server!",
+		description = f"{member} has left the server! \n Joined at: {member.joined_at}",
 		colour = discord.Colour.blue()
 	)
+	embed.set_footer(text = f"ID: {member.id} • " + date + " M-D-Y")
 	# Sends the message 
 	await leavechannel.send(embed=embed)
 	# Logs it in the console
-	print(f"{member} has left the server")
+	print(f"{member} has left the server!")
 
 
 # Shows ping between Discord and bot
@@ -133,6 +135,12 @@ Depending on the severity of the offence, you might be soft warned (verbal warni
 	embed.set_author(name="Workout Workplace", icon_url="https://cdn.discordapp.com/attachments/734879286023946240/737404555058348112/workout_workplace.jpg")
 	
 	await ctx.send(embed=embed)
+
+
+# Opens the cogs file and registers the cogs
+for filename in os.listdir("./cogs"):
+	if filename.endswith(".py"):
+		Client.load_extension(f"cogs.{filename[:-3]}")
 
 # Starts the server
 keep_alive.keep_alive()
