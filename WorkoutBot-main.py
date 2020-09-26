@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 import logging
 import time
+from datetime import date
 from dotenv import load_dotenv
 import os
 import asyncio
@@ -15,7 +16,8 @@ status = discord.Status.online
 Client = commands.Bot(command_prefix="!")
 t = time.localtime()
 clock = time.strftime("%H:%M:%S", t)
-date = time.today().strftime("%m-%d-%Y")
+today = date.today()
+date = today.strftime("%m-%d-%Y")
 token = os.getenv("Token")
 
 # Logger
