@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 import logging
-from time import gmtime, strftime
+import time
 from dotenv import load_dotenv
 import os
 import asyncio
@@ -13,7 +13,9 @@ load_dotenv()
 activity = discord.Activity(type=discord.ActivityType.watching, name="you work out!")
 status = discord.Status.online
 Client = commands.Bot(command_prefix="!")
-clock = strftime("%H:%M:%S %p", gmtime())
+t = time.localtime()
+clock = time.strftime("%H:%M:%S", t)
+date = time.today().strftime("%m-%d-%Y")
 token = os.getenv("Token")
 
 # Logger
