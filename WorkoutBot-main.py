@@ -10,10 +10,15 @@ import asyncio
 import keep_alive
 load_dotenv()
 
+# Intents
+intents = discord.Intents.default()
+intents.typing = True
+intents.members = True
+
 
 activity = discord.Activity(type=discord.ActivityType.watching, name="you work out!")
 status = discord.Status.online
-Client = commands.Bot(command_prefix="!")
+Client = commands.Bot(command_prefix="!", intents=intents)
 t = time.localtime()
 clock = time.strftime("%H:%M:%S", t)
 today = date.today()
@@ -35,40 +40,33 @@ async def on_ready():
 	await Client.change_presence(status=status, activity=activity)
 	print(f"Status has been changed to \"{status}\" and activity to \"{activity}\"")
 
+
+
 # When someone joins the server, it gets printed in the join channel and in the console
 @Client.event
 async def on_member_join(member):
 	# Channel ID's
 	joinchannel = Client.get_channel(735063988861272185)
-	dmchannel = await member.create_dm()
+	acceptrules = Client.get_channel(762612102107103262)
 	staffchannel = Client.get_channel(735064782377451533)
+	rules = Client.get_channel(734876711744831552)
 	# Log Embed
 	logembed = discord.Embed (
 		title = "Member joined",
-		description = f"{member} has joined the server. \n Account created at: {member.created_at}",
+		description = f"{member} has joined the server. \n Account created at: {member.created_at.replace(microsecond=0)}",
 		color = discord.Colour.blue()
 	)
 	logembed.set_footer(text = f"ID: {member.id} • " + date + " M-D-Y")
-	# DM embed
-	dmembed = discord.Embed (
-		title = "Workout Workplace",
-		description = "Please react with the :muscle: emoji (muscle) in order to get access to the server. By reacting, you agree that you have read and agree to the rules!",
-		colour = discord.Colour.blue()
-	)
 	# Gets the role name 
-	role = get(member.guild.roles, name="Athletes")
 	# Welcome channel message
-	await joinchannel.send(f"Welcome to the **Workout Workplace** {member.mention}! Please go over #rules and check your Direct Messages for further instructions! Looking forward to seeing you around!"),
+	await joinchannel.send(f"Welcome to the **Workout Workplace** {member.mention}! Please go over {rules.mention}, then type ``!accept`` in {acceptrules.mention} and click the appropriate reaction! See you around!"),
 	# Logs it in the console
 	print(f"{member} has joined the server!")
 	# Staff channel embed 
 	await staffchannel.send(embed=logembed)
-	# Sends a DM to the user that joined
-	await dmchannel.send(embed=dmembed)
-	# Wait for a reaction and add role
-	await Client.wait_for("reaction_add")
-	await member.add_roles(role)
-	print(f"{member} has reacted to the DM message and has been given access to the server!")
+	
+	
+	
 	
 
 # When someone leaves the server, it gets printed in the staff channel and in the console
@@ -79,7 +77,7 @@ async def on_member_remove(member):
 	# Embed Format
 	embed = discord.Embed(
 		title = "Member left",
-		description = f"{member} has left the server! \n Joined at: {member.joined_at}",
+		description = f"{member} has left the server! \n Joined at: {member.joined_at.replace(microsecond=0)}",
 		colour = discord.Colour.blue()
 	)
 	embed.set_footer(text = f"ID: {member.id} • " + date + " M-D-Y")
@@ -139,6 +137,25 @@ Depending on the severity of the offence, you might be soft warned (verbal warni
 	embed.set_author(name="Workout Workplace", icon_url="https://cdn.discordapp.com/attachments/734879286023946240/737404555058348112/workout_workplace.jpg")
 	
 	await ctx.send(embed=embed)
+
+
+@Client.command()
+async def accept(ctx):
+	first = ctx.message.author
+	guild = first.guild
+	role = get(guild.roles, id=int(737767663065104407))
+	if ctx.message.channel.id == 762612102107103262:
+		msg = await ctx.send("Have you read our rules?")
+		await msg.add_reaction("✔")
+		await msg.add_reaction("❌")
+		def check(reaction, user):
+			return str(reaction.emoji) in ["✔"] and user != Client.user
+		await Client.wait_for("reaction_add", check=check)
+		await discord.Member.add_roles(first, role)
+		print(f"{first} has reacted to the DM message and has been given access to the server!")
+	else:
+		await ctx.send ("Cannot run command in this channel.")
+
 
 
 # Opens the cogs file and registers the cogs

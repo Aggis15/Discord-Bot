@@ -1,1 +1,7 @@
 .env
+cogs/__pycache__/changes.cpython-38.pyc
+cogs/__pycache__/kickban.cpython-38.pyc
+cogs/__pycache__/memberinfo.cpython-38.pyc
+cogs/__pycache__/server-memberinfo.cpython-38.pyc
+__pycache__/keep_alive.cpython-38.pyc
+

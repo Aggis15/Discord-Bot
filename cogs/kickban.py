@@ -27,6 +27,14 @@ class Administrative_Commands(commands.Cog):
         await log.send(embed=embed)
         print(f"{member} was kicked from the server!")
 
+    @kick.error
+    async def kick_error(self, ctx, error):
+        if isinstance(error, commands.MemberNotFound):
+            await ctx.send("You need to mention a user in order to kick them!")
+            print ("Member Not Found Error caught at memberinfo")
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send ("You need to mention a user in order to kick them!")
+            print ("Missing argument error caught at memberinfo")
 
 
 # Bans pinged user and logs it in the staff chat
@@ -44,6 +52,16 @@ class Administrative_Commands(commands.Cog):
         await member.ban(reason=reason)
         await log.send(embed=embed)
         print (f"{member} has been banned from the server!")
+
+
+    @ban.error
+    async def ban_error(self, ctx, error):
+        if isinstance(error, commands.MemberNotFound):
+            await ctx.send("You need to mention a user in order to ban them!")
+            print ("Member Not Found Error caught at kickban")
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send ("You need to mention a user in order to ban them!")
+            print ("Missing argument error caught at kickban")
     
 
 
